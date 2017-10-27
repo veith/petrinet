@@ -1,3 +1,4 @@
+// petrinet is a simple petri net execution library
 package petrinet
 
 import (
@@ -20,13 +21,12 @@ func (net *Net) Init() {
 	net.EnabledTransitions = net.evaluateNextPossibleTransitions();
 }
 
-/**
- * fire a transition.
- */
+
+ // fires an enabled transition.
 func (f *Net) Fire(transition int) error {
 	var err error
 	var mutex = &sync.Mutex{}
-	if f.isTransitionEnabled(transition) {
+	if f.TransitionEnabled(transition) {
 		mutex.Lock()
 		f.EnabledTransitions = f.fastfire(transition)
 		mutex.Unlock()
@@ -37,7 +37,7 @@ func (f *Net) Fire(transition int) error {
 	}
 }
 
-func (net *Net) isTransitionEnabled(t int) bool {
+func (net *Net) TransitionEnabled(t int) bool {
 	for _, b := range net.EnabledTransitions {
 		if b == t {
 			return true
