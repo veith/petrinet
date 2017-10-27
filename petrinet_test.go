@@ -3,7 +3,7 @@ package petrinet_test
 import (
 	"testing"
 	"github.com/veith/petrinet"
-)
+ )
 
 func makeExampleNet() petrinet.Net {
 	f := petrinet.Net{
@@ -60,6 +60,26 @@ func TestPetriNet_WithoutConditionsMatrix(t *testing.T) {
 		t.Error("Expected 2, got ", len(flow.EnabledTransitions))
 	}
 
+}
+
+func BenchmarkNet_Fire(b *testing.B) {
+	flow := makeExampleNet()
+	flow.ConditionMatrix = [][]string{{"true"}, {}, {}, {}, {}, {}, {}, {}}
+	flow.OutputMatrix[0][0] = 1
+	flow.Init()
+
+	for i := 0; i < b.N; i++ {
+		  flow.Fire(0)
+	}
+}
+func BenchmarkNet_FireWithoutConditions(b *testing.B) {
+	flow := makeExampleNet()
+	flow.OutputMatrix[0][0] = 1
+	flow.Init()
+
+	for i := 0; i < b.N; i++ {
+		  flow.Fire(0)
+	}
 }
 
 func TestPetriNet_Fire(t *testing.T) {
