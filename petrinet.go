@@ -23,7 +23,8 @@ var tokenID int // token id counter
 func (net *Net) Init() {
 	tokenID = 0
 	// tokenIDs vergeben
-	net.TokenIds = make([][]int, len(net.State))
+	net.TokenIds = make([][]int, len(net.InputMatrix[0]))
+
 	// token ids for initial state
 	for i, tokens := range net.State {
 		for n := 0; n < tokens; n++ {
@@ -40,19 +41,18 @@ func (net *Net) nextTokenID() int {
 }
 
 func (net *Net) FireWithTokenId(transition int, tokenID int) error {
+
 	for p, _ := range net.InputMatrix[transition] {
 		if len(net.TokenIds[p]) > 0 { // nur wenn es elemente hat prüfen
 			for index, tokenIDVal := range net.TokenIds[p] {
 				// tokenID finden und TokenID an erste stelle setzen
-				if(tokenIDVal == tokenID){
-					// cut
-					t := net.TokenIds[p][:index]
-					net.TokenIds[p] = append(net.TokenIds[p][:index], net.TokenIds[p][index+1:]...)
-					// prepend
-					net.TokenIds[p] = append(t, net.TokenIds[p]...)
+				if (tokenIDVal == tokenID) {
+					a := net.TokenIds[p][index]
+					b := net.TokenIds[p][0]
+					net.TokenIds[p][index] = b
+					net.TokenIds[p][0] = a
 					return net.Fire(transition)
 				}
-
 			}
 		}
 	}
@@ -64,9 +64,12 @@ func (net *Net) FireWithTokenId(transition int, tokenID int) error {
 func (f *Net) Fire(transition int) error {
 	var err error
 	var mutex = &sync.Mutex{}
+
 	if f.TransitionEnabled(transition) {
 		mutex.Lock()
+
 		f.EnabledTransitions = f.fastfire(transition)
+
 		mutex.Unlock()
 		return err
 	} else {
@@ -144,23 +147,31 @@ func (net *Net) proveConditions(transitionIndex int) bool {
 
 // fire ohne Check
 func (net *Net) fastfire(transition int) []int {
-	for i, step := range net.InputMatrix[transition] {
-		net.State[i] = net.State[i] - step
+
+	for place, step := range net.InputMatrix[transition] {
+		net.State[place] = net.State[place] - step
+
 		// id tokens entfernen (an erster stelle)
 		for n := 0; n < step; n++ {
 			// pop
-			net.TokenIds[i] = net.TokenIds[i][1:]
+
+			net.TokenIds[place] = net.TokenIds[place][1:]
+
 		}
 	}
-	for i, step := range net.OutputMatrix[transition] {
-		net.State[i] = net.State[i] + step
+	for place, step := range net.OutputMatrix[transition] {
+		net.State[place] = net.State[place] + step
 
 		// id tokens erzeugen (an letzter stelle)
 		for n := 0; n < step; n++ {
 			// push
-			net.TokenIds[i] = append(net.TokenIds[i], net.nextTokenID())
+			nextID := net.nextTokenID()
+
+			net.TokenIds[place] = append(net.TokenIds[place], nextID)
+
 		}
 
 	}
+
 	return net.evaluateNextPossibleTransitions();
 }
