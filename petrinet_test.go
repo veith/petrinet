@@ -103,7 +103,7 @@ func TestPetriNet_Fire(t *testing.T) {
 func TestPetriNet_TokenID(t *testing.T) {
 	flow := makeExampleNet()
 	flow.State = []int{3, 0, 0, 0, 0, 0, 0, 0, 0}
-		flow.Init()
+	flow.Init()
 	if flow.TokenIds[0][0] != 1 {
 		t.Error("token id counter wrong ", flow.TokenIds)
 	}
@@ -126,7 +126,6 @@ func TestPetriNet_TokenID(t *testing.T) {
 	err = flow.Fire(3)
 	err = flow.Fire(4)
 
-
 	if flow.TokenIds[6][0] != 9 {
 		t.Error("token id counter wrong ", flow.TokenIds)
 	}
@@ -139,7 +138,7 @@ func TestPetriNet_TokenID(t *testing.T) {
 		t.Error(err)
 	}
 
-	flow.FireWithTokenId(5,17)
+	flow.FireWithTokenId(5, 17)
 
 	if flow.TokenIds[6][0] != 9 {
 		t.Error("token id counter wrong ", flow.TokenIds)
@@ -148,11 +147,13 @@ func TestPetriNet_TokenID(t *testing.T) {
 	if flow.TokenIds[7][0] != 22 {
 		t.Error("token id counter wrong ", flow.TokenIds)
 	}
-	err = flow.FireWithTokenId(5,17)
+
+	err = flow.FireWithTokenId(5, 2)
+
 	if err == nil {
 		t.Error("should return error tokenid not found")
 	}
-	err = flow.FireWithTokenId(5,21)
+	err = flow.FireWithTokenId(5, 21)
 
 	if flow.TokenIds[6][0] != 9 {
 		t.Error("token id counter wrong ", flow.TokenIds)
@@ -165,6 +166,5 @@ func TestPetriNet_TokenID(t *testing.T) {
 	if len(flow.EnabledTransitions) != 0 {
 		t.Error("should have no enabled transitions, got ", len(flow.EnabledTransitions))
 	}
-
 
 }

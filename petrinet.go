@@ -41,28 +41,27 @@ func (net *Net) nextTokenID() int {
 }
 
 func (net *Net) FireWithTokenId(transition int, tokenID int) error {
-	var mutex = &sync.Mutex{}
-	mutex.Lock()
+
 	for p, _ := range net.InputMatrix[transition] {
+
 		if len(net.TokenIds[p]) > 0 { // nur wenn es elemente hat prüfen
-		if 	net.TokenIds[p][0] != tokenID{
-		for index, tokenIDVal := range net.TokenIds[p] {
-				// tokenID finden und TokenID an erste stelle setzen
-				if (tokenIDVal == tokenID) {
-					a := net.TokenIds[p][index]
-					b := net.TokenIds[p][0]
-					net.TokenIds[p][index] = b
-					net.TokenIds[p][0] = a
-					return net.Fire(transition)
+ 			if net.TokenIds[p][0] != tokenID {
+				for index, tokenIDVal := range net.TokenIds[p] {
+					// tokenID finden und TokenID an erste stelle setzen
+					if (tokenIDVal == tokenID) {
+						a := net.TokenIds[p][index]
+						b := net.TokenIds[p][0]
+						net.TokenIds[p][index] = b
+						net.TokenIds[p][0] = a
+						return net.Fire(transition)
+					}
 				}
+			}else{
+				return net.Fire(transition)
 			}
 		}
-		}else{
-			return net.Fire(transition)
-
-		}
 	}
-	mutex.Unlock()
+
 	return errors.New("TokenID not found")
 }
 
