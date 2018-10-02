@@ -1,0 +1,38 @@
+@startuml
+rectangle "T1" as t1
+rectangle "T2" as t2
+rectangle "T3" as t3
+rectangle "T4" as t4
+rectangle "T5" as t5
+rectangle "T6" as t6
+rectangle "T7" as t7
+
+interface "start (p0)" as a
+interface "p1" as b
+interface "p2" as c
+interface "p3" as d
+interface "p4" as e
+interface "p5" as f
+interface "p6" as g
+interface "p7" as h
+interface "p7" as h
+interface "end (p8)" as i
+ a --> t1
+ b --> t2
+ c --> t3
+ d --> t4
+ e --> t4
+ f --> t5
+ g --> t6
+ h --> t7
+
+ t1  --> b
+ t1  --> c
+ t2  --> d
+ t3  --> e
+ t4  --> f
+ t5  --> g
+ t6  --> h
+ t7  --> i
+
+@enduml

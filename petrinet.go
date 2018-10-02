@@ -40,6 +40,7 @@ func (net *Net) nextTokenID() int {
 	return tokenID
 }
 
+
 func (net *Net) FireWithTokenId(transition int, tokenID int) error {
 
 	for p, _ := range net.InputMatrix[transition] {
@@ -73,7 +74,6 @@ func (f *Net) Fire(transition int) error {
 
 	if f.TransitionEnabled(transition) {
 		mutex.Lock()
-
 		f.EnabledTransitions = f.fastfire(transition)
 
 		mutex.Unlock()
@@ -138,6 +138,7 @@ func removeFromIntFromArray(l []int, item int) []int {
 	return l
 }
 
+// Prüft eine Transitionsbedingung
 func (net *Net) proveConditions(transitionIndex int) bool {
 	if len(net.ConditionMatrix) > 0 {
 		for _, condition := range net.ConditionMatrix[transitionIndex] {

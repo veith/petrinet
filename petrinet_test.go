@@ -40,6 +40,7 @@ func TestPetriNet_FireBadCondition(t *testing.T) {
 	flow.ConditionMatrix = [][]string{{"a > 11", "b == 8", "a != b", "true"}, {}, {}, {}, {}, {}, {}, {}}
 
 	flow.Init()
+
 	err := flow.Fire(0)
 
 	if err == nil {
@@ -52,6 +53,7 @@ func TestPetriNet_WithoutConditionsMatrix(t *testing.T) {
 	flow := makeExampleNet()
 
 	flow.Init()
+
 	err := flow.Fire(0)
 
 	if err != nil {
