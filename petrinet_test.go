@@ -47,6 +47,13 @@ func TestPetriNet_FireBadCondition(t *testing.T) {
 		t.Error("should not fire")
 	}
 
+	flow.UpdateVariable("a", 12)
+
+	errr := flow.Fire(0)
+
+	if errr != nil {
+		t.Error("should have no error ")
+	}
 }
 
 func TestPetriNet_WithoutConditionsMatrix(t *testing.T) {

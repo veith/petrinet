@@ -152,6 +152,10 @@ func (net *Net) proveConditions(transitionIndex int) bool {
 	return true
 }
 
+func (net *Net)  UpdateVariable(name string, value interface{}){
+	net.Variables[name] = value;
+	net.EnabledTransitions = net.evaluateNextPossibleTransitions();
+}
 // fire ohne Check
 func (net *Net) fastfire(transition int) []int {
 
