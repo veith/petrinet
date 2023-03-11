@@ -139,6 +139,7 @@ func removeFromIntFromArray(l []int, item int) []int {
 
 // Prüft eine Transitionsbedingung
 func (net *Net) proveConditions(transitionIndex int) bool {
+
 	if len(net.ConditionMatrix) > 0 {
 		for _, condition := range net.ConditionMatrix[transitionIndex] {
 

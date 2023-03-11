@@ -75,7 +75,7 @@ func TestPetriNet_WithoutConditionsMatrix(t *testing.T) {
 
 func BenchmarkNet_Fire(b *testing.B) {
 	flow := makeExampleNet()
-	flow.ConditionMatrix = [][]string{{"true"}, {}, {}, {}, {}, {}, {}, {}}
+	flow.ConditionMatrix = [][]string{{"a > 11", "b == 8", "a != b", "true"}, {}, {}, {}, {}, {}, {}, {}}
 	flow.OutputMatrix[0][0] = 1
 	flow.Init()
 
