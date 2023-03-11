@@ -5,17 +5,19 @@ import (
 	"errors"
 	"fmt"
 	"github.com/antonmedv/expr"
+	"github.com/antonmedv/expr/vm"
 	"sync"
 )
 
 type Net struct {
-	InputMatrix        [][]int                `json:"-"`                   // Input Matrix
-	OutputMatrix       [][]int                `json:"-"`                   // Output Matrix
-	ConditionMatrix    [][]string             `json:"-"`                   // Condition Matrix
-	State              []int                  `json:"-"`                   // State
-	TokenIds           [][]int                `json:"token-identifier"`    // State
-	Variables          map[string]interface{} `json:"variables"`           // variablen die mit dem Prozess mitlaufen
-	EnabledTransitions []int                  `json:"enabled_transitions"` // list of transitions which can be fired
+	InputMatrix             [][]int                `json:"-"`                   // Input Matrix
+	OutputMatrix            [][]int                `json:"-"`                   // Output Matrix
+	ConditionMatrix         [][]string             `json:"-"`                   // Condition Matrix
+	State                   []int                  `json:"-"`                   // State
+	TokenIds                [][]int                `json:"token-identifier"`    // State
+	Variables               map[string]interface{} `json:"variables"`           // variablen die mit dem Prozess mitlaufen
+	EnabledTransitions      []int                  `json:"enabled_transitions"` // list of transitions which can be fired
+	compiledConditionMatrix [][]*vm.Program        `json:"-"`                   // Precompiled Condition Matrix
 }
 
 var tokenID int // token id counter
@@ -29,6 +31,20 @@ func (net *Net) Init() {
 	for i, tokens := range net.State {
 		for n := 0; n < tokens; n++ {
 			net.TokenIds[i] = append(net.TokenIds[i], net.nextTokenID())
+		}
+	}
+	// precompile conditions
+	if len(net.ConditionMatrix) > 0 {
+		net.compiledConditionMatrix = make([][]*vm.Program, len(net.ConditionMatrix))
+		for transitionIndex, _ := range net.ConditionMatrix {
+			net.compiledConditionMatrix[transitionIndex] = make([]*vm.Program, len(net.ConditionMatrix[transitionIndex]))
+			for i, condition := range net.ConditionMatrix[transitionIndex] {
+				prog, err := expr.Compile(condition, expr.Env(net.Variables))
+				if err != nil {
+					panic(err)
+				}
+				net.compiledConditionMatrix[transitionIndex][i] = prog
+			}
 		}
 	}
 
@@ -141,10 +157,8 @@ func removeFromIntFromArray(l []int, item int) []int {
 func (net *Net) proveConditions(transitionIndex int) bool {
 
 	if len(net.ConditionMatrix) > 0 {
-		for _, condition := range net.ConditionMatrix[transitionIndex] {
-
-			result, err := expr.Eval(condition, net.Variables)
-
+		for _, prog := range net.compiledConditionMatrix[transitionIndex] {
+			result, err := expr.Run(prog, net.Variables)
 			if err != nil || !result.(bool) {
 				return false
 			}
@@ -155,6 +169,7 @@ func (net *Net) proveConditions(transitionIndex int) bool {
 
 func (net *Net) UpdateVariable(name string, value interface{}) {
 	net.Variables[name] = value
+	// conditions are not the same, maybe a Transition is now possible
 	net.EnabledTransitions = net.evaluateNextPossibleTransitions()
 }
 
