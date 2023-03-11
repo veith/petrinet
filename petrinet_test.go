@@ -27,9 +27,9 @@ func makeExampleNet() petrinet.Net {
 			{0, 0, 0, 0, 0, 0, 0, 1, 0},
 			{0, 0, 0, 0, 0, 0, 0, 0, 1},
 		},
-		ConditionMatrix: [][]string{{"true"}, {}, {}, {}, {}, {}, {}, {}},
-		State:           []int{1, 0, 0, 0, 0, 0, 0, 0, 0},
-		Variables:       map[string]interface{}{"a": 4, "b": 8},
+		// ConditionMatrix: [][]string{{"true"}, {}, {}, {}, {}, {}, {}, {}},
+		State:     []int{1, 0, 0, 0, 0, 0, 0, 0, 0},
+		Variables: map[string]interface{}{"a": 4, "b": 8},
 	}
 	return f
 }

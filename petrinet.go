@@ -143,8 +143,6 @@ func (net *Net) proveConditions(transitionIndex int) bool {
 	if len(net.ConditionMatrix) > 0 {
 		for _, condition := range net.ConditionMatrix[transitionIndex] {
 
-			// expression, err := govaluate.NewEvaluableExpression(condition);
-			// result, err := expression.Evaluate(net.Variables);
 			result, err := expr.Eval(condition, net.Variables)
 
 			if err != nil || !result.(bool) {
