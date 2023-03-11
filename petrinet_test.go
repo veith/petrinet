@@ -1,8 +1,8 @@
 package petrinet_test
 
 import (
-	"testing"
 	"github.com/veith/petrinet"
+	"testing"
 
 	"fmt"
 )

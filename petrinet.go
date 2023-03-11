@@ -2,10 +2,10 @@
 package petrinet
 
 import (
-	"sync"
-	"github.com/Knetic/govaluate"
 	"errors"
 	"fmt"
+	"github.com/antonmedv/expr"
+	"sync"
 )
 
 type Net struct {
@@ -32,7 +32,7 @@ func (net *Net) Init() {
 		}
 	}
 
-	net.EnabledTransitions = net.evaluateNextPossibleTransitions();
+	net.EnabledTransitions = net.evaluateNextPossibleTransitions()
 }
 
 func (net *Net) nextTokenID() int {
@@ -40,16 +40,15 @@ func (net *Net) nextTokenID() int {
 	return tokenID
 }
 
-
 func (net *Net) FireWithTokenId(transition int, tokenID int) error {
 
 	for p, _ := range net.InputMatrix[transition] {
 
 		if len(net.TokenIds[p]) > 0 { // nur wenn es elemente hat prüfen
- 			if net.TokenIds[p][0] != tokenID {
+			if net.TokenIds[p][0] != tokenID {
 				for index, tokenIDVal := range net.TokenIds[p] {
 					// tokenID finden und TokenID an erste stelle setzen
-					if (tokenIDVal == tokenID) {
+					if tokenIDVal == tokenID {
 						a := net.TokenIds[p][index]
 						b := net.TokenIds[p][0]
 						net.TokenIds[p][index] = b
@@ -57,7 +56,7 @@ func (net *Net) FireWithTokenId(transition int, tokenID int) error {
 						return net.Fire(transition)
 					}
 				}
-			}else{
+			} else {
 				return net.Fire(transition)
 			}
 		}
@@ -142,8 +141,11 @@ func removeFromIntFromArray(l []int, item int) []int {
 func (net *Net) proveConditions(transitionIndex int) bool {
 	if len(net.ConditionMatrix) > 0 {
 		for _, condition := range net.ConditionMatrix[transitionIndex] {
-			expression, err := govaluate.NewEvaluableExpression(condition);
-			result, err := expression.Evaluate(net.Variables);
+
+			// expression, err := govaluate.NewEvaluableExpression(condition);
+			// result, err := expression.Evaluate(net.Variables);
+			result, err := expr.Eval(condition, net.Variables)
+
 			if err != nil || !result.(bool) {
 				return false
 			}
@@ -152,10 +154,11 @@ func (net *Net) proveConditions(transitionIndex int) bool {
 	return true
 }
 
-func (net *Net)  UpdateVariable(name string, value interface{}){
-	net.Variables[name] = value;
-	net.EnabledTransitions = net.evaluateNextPossibleTransitions();
+func (net *Net) UpdateVariable(name string, value interface{}) {
+	net.Variables[name] = value
+	net.EnabledTransitions = net.evaluateNextPossibleTransitions()
 }
+
 // fire ohne Check
 func (net *Net) fastfire(transition int) []int {
 
@@ -184,5 +187,5 @@ func (net *Net) fastfire(transition int) []int {
 
 	}
 
-	return net.evaluateNextPossibleTransitions();
+	return net.evaluateNextPossibleTransitions()
 }
