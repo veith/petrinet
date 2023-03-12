@@ -1,4 +1,4 @@
-# petrinet library
+# a petrinet library
 
 PACKAGE DOCUMENTATION
 
@@ -6,6 +6,8 @@ package petrinet
     import "./"
 
     petrinet is a simple petri net execution library
+
+
 
 TYPES
 

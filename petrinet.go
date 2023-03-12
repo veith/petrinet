@@ -109,6 +109,7 @@ func (net *Net) TransitionEnabled(t int) bool {
 }
 
 // prüfe ob Transition ungeachtet der arc bedingungen gefeuert werden könnte
+// prüft auch, ob genügend tokens vorhanden sind.
 func (net *Net) fastCheck(transition int) bool {
 	for place, p := range net.InputMatrix[transition] {
 		if p != 0 && net.State[place]-p < 0 {
@@ -136,7 +137,7 @@ func (net *Net) evaluateNextPossibleTransitions() []int {
 
 		// sobald eine Bedingung auf einem arc zu einer Transition nicht erfüllt ist, ist die Transition nicht mehr feuerbar
 		// conditionen sind als string eingetragen
-		if !net.proveConditions(t) {
+		if !net.proveConditions(possibleTransitions[t]) {
 			lockedTransitions = append(lockedTransitions, t)
 			possibleTransitions = removeFromIntFromArray(possibleTransitions, t)
 		}
