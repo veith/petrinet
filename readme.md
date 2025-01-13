@@ -1,15 +1,13 @@
 # a petrinet library
 
-PACKAGE DOCUMENTATION
+## PACKAGE DOCUMENTATION
 
+
+
+### TYPES
+```go
+// petrinet is a simple petri net execution library
 package petrinet
-    import "./"
-
-    petrinet is a simple petri net execution library
-
-
-
-TYPES
 
 type Net struct {
     InputMatrix        [][]int                `json:"-"`                   // Input Matrix
@@ -24,5 +22,5 @@ func (f *Net) Fire(transition int) error
     fires an enabled transition.
 
 func (net *Net) Init()
-
+```
 
